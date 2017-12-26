@@ -53,4 +53,51 @@ minionsRouter.delete('/:id', (req,res,next) => {
 
 });
 
+minionsRouter.get('/:id/work', (req,res,next) => {
+
+  const minionWork = getAllFromDatabase('work').filter(workByMinion => workByMinion.minionId === req.params.minionId);
+  res.send(minionWork)
+
+});
+
+
+minionsRouter.post('/:id/work', (req,res,next) => {
+
+  const work = addToDatabase('work',req.body)
+  res.status(201).send(work)
+});
+
+
+minionsRouter.param('workId', (req, res, next, id) => {
+  const work = getFromDatabaseById('work', id);
+  if (work) {
+    req.work = work;
+    next();
+  } else {
+    res.status(404).send();
+  }
+});
+
+minionsRouter.put('/:id/work/:workId', (req, res, next) => {
+  if (req.params.id !== req.body.minionId) {
+    res.status(400).send();
+  } else {
+    updatedWork = updateInstanceInDatabase('work', req.body);
+    res.send(updatedWork);
+  }
+});
+
+minionsRouter.delete('/:id/work/:workId', (req, res, next) => {
+  const deleted = deleteFromDatabasebyId('work', req.params.workId);
+  if (deleted) {
+    res.status(204);
+  } else {
+    res.status(500);
+  }
+  res.send();
+});
+
+
+
+
 module.exports = minionsRouter;
